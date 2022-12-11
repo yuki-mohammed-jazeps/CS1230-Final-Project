@@ -185,7 +185,7 @@ void main() {
     // Shadow calculation
     float shadow = 0;  // no shadow by default
     if (light_types[i] == 2) {  // only calculate shadow if spot light
-        float bias = max(0.00025 * (1.0 - dot(-to_light, normal) ), 0.000005f);  // bias to avoid self-shadowing (tinker with max and min val)
+        float bias = max(0.0005 * (1.0 - dot(-to_light, normal) ), 0.00005f);  // bias to avoid self-shadowing (tinker with max and min val)
         shadow =  calculate_shadow(bias);
     }
 

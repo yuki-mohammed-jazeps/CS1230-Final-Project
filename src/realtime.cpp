@@ -148,14 +148,14 @@ void Realtime::updateSpotLightSpaceMat() {
     glm::mat4 lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
 
     spotLight.dir = rotMat * spotLight.dir; // rotate the spot light direction by 1deg
-    glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(spotLight.pos), glm::vec3(spotLight.dir), glm::vec3(0.0f,1.0f,0.0f));
+    glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(spotLight.pos), glm::vec3(spotLight.dir), glm::vec3(0.0f,0.0f,1.0f));
 
     spotLightSpaceMat = lightProjectionMatrix * lightViewMatrix;
 
     // update the directions for all spot lights in the scene as well
     for (SceneLightData &light : meta_data.lights) {
         if (light.type == LightType::LIGHT_SPOT) {
-            light.dir = rotMat*light.dir; // rotate the spot light direction by 10deg
+            light.dir = rotMat*light.dir; // rotate the spot light direction by 1deg
         }
     }
 
@@ -287,7 +287,7 @@ void Realtime::sceneChanged() {
           spotLight = light;
           float FoV = light.angle; // glm::radians(90.0f);
           auto lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 150.f);
-          auto lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,1.0f,0.0f));
+          auto lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
           spotLightSpaceMat = lightProjectionMatrix * lightViewMatrix;
       }
   }
