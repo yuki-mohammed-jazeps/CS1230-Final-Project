@@ -33,6 +33,45 @@ uniform float light_penumbras[8];
 uniform vec3  light_functions[8];
 uniform vec3  camera_pos;
 
+// shadow mapping related (meant to ass shadows to the first spot light only, might not work as intended if multiple spot lights in scene)
+uniform sampler2D shadowMap;
+uniform mat4 spotLightSpaceMat;
+
+float calculate_shadow(float bias)
+{
+    float shadow = 0.0f;
+
+    // Shadow calculations for spot light ///
+    vec4 fragPosLightSpace = spotLightSpaceMat * vec4(vec_pos, 1);  // coordinate of world space frag from POV of spot light
+    vec3 lightCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;  // get it into clip space
+    if (lightCoords.z <= 1.0f) {  // only calc shadow if visible (i.e. if its inside the frustum of perspective proj)
+
+        lightCoords = (lightCoords + 1.0f) / 2.0f ;
+        float currentDepth = lightCoords.z;
+
+        // hard shadows
+//         float closestDepth = texture(shadowMap, lightCoords.xy).r;
+//         if (currentDepth > closestDepth+bias) {
+//            shadow = 1.0;
+//         }
+
+        // soft shadows
+        int sR = 5;
+        vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
+        for (int y = -sR; y <=  sR; y++) {
+            for (int x = -sR; x <= sR; x++) {
+                float closestDepth = texture(shadowMap, lightCoords.xy + vec2(x, y)*pixelSize).r;
+                if (currentDepth > closestDepth+bias) {
+                    shadow += 1.0;
+                }
+            }
+        }
+        shadow /= pow((sR*2+1), 2);
+    }
+
+    return shadow;
+}
+
 // Calculate falloff for spotlights
 float calculate_falloff(float theta, float outer, float penumbra) {
   float inner = outer - penumbra;
@@ -143,7 +182,14 @@ void main() {
     }
     vec3 curr_spec = dot_prod_s * spec;
 
+    // Shadow calculation
+    float shadow = 0;  // no shadow by default
+    if (light_types[i] == 2) {  // only calculate shadow if spot light
+        float bias = max(0.00025 * (1.0 - dot(-to_light, normal) ), 0.000005f);  // bias to avoid self-shadowing (tinker with max and min val)
+        shadow =  calculate_shadow(bias);
+    }
+
     // Put it all together
-    fragcolor += vec4(base_colors * (curr_diffuse + curr_spec), 0.f);
+    fragcolor += vec4(base_colors * (1 - shadow) * (curr_diffuse + curr_spec), 0.f);
   }
 }

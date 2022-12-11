@@ -324,6 +324,33 @@ void geometry_set::draw_shapes(const vector<shape_description> &vec) {
   }
 }
 
+// Auxiliary to render shapes in any VAO (without the lighting calculations)
+void geometry_set::draw_shapes_shadows(GLuint shadow_shader) {
+  set_vao_tessellated();
+  const vector<shape_description> &vec = shape_descriptions;
+  for (const auto &d : vec) {
+    // Send this object's model matrix
+    glUniformMatrix4fv(glGetUniformLocation(shadow_shader, "model"), 1, GL_FALSE, &(*(d.model_matrix))[0][0]);
+
+    // Draw this shape
+    glDrawArrays(mode, d.offset, d.points);
+  }
+
+  // Extra credit: draw meshes if option is enabled
+  if (meshes) {
+    set_vao_meshes();
+    const vector<shape_description> &vec = mesh_shape_descriptions;
+    for (const auto &d : vec) {
+      // Send this object's model matrix
+      glUniformMatrix4fv(glGetUniformLocation(shadow_shader, "model"), 1, GL_FALSE, &(*(d.model_matrix))[0][0]);
+
+      // Draw this shape
+      glDrawArrays(mode, d.offset, d.points);
+    }
+
+  }
+}
+
 void geometry_set::draw() {
   if (!valid)
     return;

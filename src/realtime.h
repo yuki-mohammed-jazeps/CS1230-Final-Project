@@ -81,4 +81,14 @@ private:
 
     // Camera
     camera cam;
+
+    // Shadowmapping related
+    GLuint shadow_shader_id;
+    GLuint shadowFBO;
+    GLuint shadowMap;
+    GLuint shadowWidth = 1024, shadowHeight = 1024;
+    bool spotLightInScene = false;  // true if there is at least one spot light in the scene
+    SceneLightData spotLight;
+    glm::mat4 spotLightSpaceMat;  // matrix that moves point into spot light space
+    void updateSpotLightSpaceMat(); // rotates the direction vec by 10deg every call
 };
