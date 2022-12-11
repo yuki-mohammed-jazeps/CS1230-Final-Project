@@ -57,7 +57,8 @@ public:
     tex_id(tex), tex_blend(blend) {};
 };
 
-geometry_set::geometry_set() : valid(false), mode(GL_TRIANGLES) {};
+geometry_set::geometry_set() : valid(false), texturing(false),
+  meshes(false), lod(false), mode(GL_TRIANGLES) {};
 
 void geometry_set::initialize(GLuint program_id) {
   // Location of model matrix
