@@ -103,7 +103,7 @@ void Realtime::initializeGL() {
   // Depth texture
   glGenTextures(1, &shadowMap);
   glBindTexture(GL_TEXTURE_2D, shadowMap);
-  glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0,GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT,  size().width()*m_devicePixelRatio, size().height()*m_devicePixelRatio, 0,GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -139,15 +139,30 @@ glm::mat4 rotationMat(float theta, glm::vec3 axis) {
                      0, 0, 0, 1);
 }
 
-// rotates the direction vec by 10deg every call
+// rotates the direction vec by 1deg every call
 void Realtime::updateSpotLightSpaceMat() {
+
+    auto rotMat = rotationMat(1, glm::vec3(0, -1, 0)); // rotates vectors by 1deg along -y axis
+
     float FoV = spotLight.angle; // glm::radians(90.0f);
     glm::mat4 lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
 
-    spotLight.dir = rotationMat(3, glm::vec3(0, -1, 0)) * spotLight.dir; // rotate the spot light direction by 10deg
+    spotLight.dir = rotMat * spotLight.dir; // rotate the spot light direction by 1deg
     glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(spotLight.pos), glm::vec3(spotLight.dir), glm::vec3(0.0f,1.0f,0.0f));
 
     spotLightSpaceMat = lightProjectionMatrix * lightViewMatrix;
+
+    // update the directions for all spot lights in the scene as well
+    for (SceneLightData &light : meta_data.lights) {
+        if (light.type == LightType::LIGHT_SPOT) {
+            light.dir = rotMat*light.dir; // rotate the spot light direction by 10deg
+        }
+    }
+
+    scene_lighting.set_data(meta_data.lights,
+      meta_data.globalData.ka, meta_data.globalData.kd,
+      meta_data.globalData.ks);
+
 }
 
 void Realtime::paintGL() {
@@ -156,10 +171,9 @@ void Realtime::paintGL() {
     // Bind shadow buffer, paint shadow map into FBO buffer texture shadowMap
     if (spotLightInScene) {  // render shadow map only if there is one spot light in the scene
 
-        // updateSpotLightSpaceMat();
+        updateSpotLightSpaceMat();  // calculates the light space mat after rotating the spot light by 1deg
 
         glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
-        glViewport(0, 0, shadowWidth, shadowHeight);  // setting viewport for the shadows
         glClear(GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shadow_shader_id);
@@ -167,7 +181,6 @@ void Realtime::paintGL() {
         scene_objects.draw_shapes_shadows(shadow_shader_id);
         glUseProgram(0);
 
-        glViewport(0, 0, size(). width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);  // revert view port to default screen size
     }
     // ------------------------------------------------------------------------- //
 
@@ -218,6 +231,11 @@ void Realtime::resizeGL(int w, int h) {
   cam.update_size(size().width(), size().height());
 
   full_quad.make_fbo();
+
+  // update the shadow map texture to match the view port
+  glBindTexture(GL_TEXTURE_2D, shadowMap);
+  glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT,  size().width()*m_devicePixelRatio, size().height()*m_devicePixelRatio, 0,GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Realtime::sceneChanged() {
@@ -268,8 +286,8 @@ void Realtime::sceneChanged() {
           spotLightInScene = true;
           spotLight = light;
           float FoV = light.angle; // glm::radians(90.0f);
-          auto lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
-          auto lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
+          auto lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 150.f);
+          auto lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,1.0f,0.0f));
           spotLightSpaceMat = lightProjectionMatrix * lightViewMatrix;
       }
   }
