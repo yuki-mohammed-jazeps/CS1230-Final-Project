@@ -83,11 +83,11 @@ private:
     camera cam;
 
     // Shadowmapping related
+    int MAX_SPOTLIGHTS = 4;
     GLuint shadow_shader_id;
-    GLuint shadowFBO;
-    GLuint shadowMap;
-    bool spotLightInScene = false;  // true if there is at least one spot light in the scene
-    SceneLightData spotLight;
-    glm::mat4 spotLightSpaceMat;  // matrix that moves point into spot light space
+    std::array<GLuint, 4> shadowFBO;  // support for shadow maps for 3 spot lights
+    std::array<GLuint, 4> shadowMap;
+    bool spotLightsInScene = false;  // true if there is at least one spot light in the scene
+    std::vector<glm::mat4> spotLightSpaceMats;
     void updateSpotLightSpaceMat(); // rotates the direction vec by 10deg every call
 };

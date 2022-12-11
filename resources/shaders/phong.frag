@@ -34,15 +34,17 @@ uniform vec3  light_functions[8];
 uniform vec3  camera_pos;
 
 // shadow mapping related (meant to ass shadows to the first spot light only, might not work as intended if multiple spot lights in scene)
-uniform sampler2D shadowMap;
-uniform mat4 spotLightSpaceMat;
+uniform sampler2D shadowMap[4];
+uniform mat4 spotLightSpaceMat[4];
+
+int spotLightNum = 0;
 
 float calculate_shadow(float bias)
 {
     float shadow = 0.0f;
 
     // Shadow calculations for spot light ///
-    vec4 fragPosLightSpace = spotLightSpaceMat * vec4(vec_pos, 1);  // coordinate of world space frag from POV of spot light
+    vec4 fragPosLightSpace = spotLightSpaceMat[spotLightNum] * vec4(vec_pos, 1);  // coordinate of world space frag from POV of spot light
     vec3 lightCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;  // get it into clip space
     if (lightCoords.z <= 1.0f) {  // only calc shadow if visible (i.e. if its inside the frustum of perspective proj)
 
@@ -50,17 +52,17 @@ float calculate_shadow(float bias)
         float currentDepth = lightCoords.z;
 
         // hard shadows
-//         float closestDepth = texture(shadowMap, lightCoords.xy).r;
+//         float closestDepth = texture(shadowMap[spotLightNum], lightCoords.xy).r;
 //         if (currentDepth > closestDepth+bias) {
 //            shadow = 1.0;
 //         }
 
         // soft shadows
         int sR = 5;
-        vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
+        vec2 pixelSize = 1.0 / textureSize(shadowMap[spotLightNum], 0);
         for (int y = -sR; y <=  sR; y++) {
             for (int x = -sR; x <= sR; x++) {
-                float closestDepth = texture(shadowMap, lightCoords.xy + vec2(x, y)*pixelSize).r;
+                float closestDepth = texture(shadowMap[spotLightNum], lightCoords.xy + vec2(x, y)*pixelSize).r;
                 if (currentDepth > closestDepth+bias) {
                     shadow += 1.0;
                 }
@@ -187,6 +189,7 @@ void main() {
     if (light_types[i] == 2) {  // only calculate shadow if spot light
         float bias = max(0.0005 * (1.0 - dot(-to_light, normal) ), 0.00005f);  // bias to avoid self-shadowing (tinker with max and min val)
         shadow =  calculate_shadow(bias);
+        spotLightNum += 1;
     }
 
     // Put it all together

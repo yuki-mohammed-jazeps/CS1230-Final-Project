@@ -93,7 +93,7 @@ void MainWindow::initialize() {
 
     fboBox = new QSpinBox();
     fboBox->setMinimum(0);
-    fboBox->setMaximum(3);
+    fboBox->setMaximum(10);
     fboBox->setSingleStep(1);
     fboBox->setValue(0);
 
