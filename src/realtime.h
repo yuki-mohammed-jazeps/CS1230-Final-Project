@@ -62,6 +62,7 @@ private:
 
     // Shaders
     GLuint phong_shader_id;
+    GLuint parallax_shader_id;
     GLuint texture_shader_id;
 
     // To avoid unnecessary updates

@@ -66,22 +66,33 @@ void Realtime::initializeGL() {
   glEnable(GL_CULL_FACE);
 
   // Load shaders
-  phong_shader_id   = ShaderLoader::createShaderProgram("resources/shaders/phong.vert",
-                                                        "resources/shaders/phong.frag");
-  texture_shader_id = ShaderLoader::createShaderProgram("resources/shaders/texture.vert",
-                                                        "resources/shaders/texture.frag");
-
-  glUseProgram(phong_shader_id);
-  // Pass shader to camera
-  cam.initialize(phong_shader_id);
-  // Pass shader to scene lighting
-  scene_lighting.initialize(phong_shader_id);
-  // Pass shader to scene geometry
-  scene_objects.initialize(phong_shader_id);
+  phong_shader_id    = ShaderLoader::createShaderProgram("resources/shaders/phong.vert",
+                                                         "resources/shaders/phong.frag");
+  parallax_shader_id = ShaderLoader::createShaderProgram("resources/shaders/parallax.vert",
+                                                         "resources/shaders/parallax.frag");
+  texture_shader_id  = ShaderLoader::createShaderProgram("resources/shaders/texture.vert",
+                                                         "resources/shaders/texture.frag");
 
   // Set texture uniform for our phong shader
+  glUseProgram(phong_shader_id);
   GLint tex_u = glGetUniformLocation(phong_shader_id, "tex");
   glUniform1i(tex_u, 0);
+
+  glUseProgram(parallax_shader_id);
+  // Pass shader to camera
+  cam.initialize(parallax_shader_id);
+  // Pass shader to scene lighting
+  scene_lighting.initialize(parallax_shader_id);
+  // Pass shader to scene geometry
+  scene_objects.initialize(parallax_shader_id);
+
+  // Set texture uniforms for our parallax shaders
+  GLint p_tex_u = glGetUniformLocation(parallax_shader_id, "tex");
+  glUniform1i(p_tex_u, 0);
+  GLint p_nor_u = glGetUniformLocation(parallax_shader_id, "normal_map");
+  glUniform1i(p_nor_u, 1);
+  GLint p_dis_u = glGetUniformLocation(parallax_shader_id, "disp_map");
+  glUniform1i(p_dis_u, 2);
 
   // Initialize uniforms for the fullscreen quad
   glUseProgram(texture_shader_id);
@@ -97,7 +108,7 @@ void Realtime::paintGL() {
   ///////////////////////////
   // Render scene geometry //
   ///////////////////////////
-  glUseProgram(phong_shader_id);
+  glUseProgram(parallax_shader_id);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Send light and camera data if needed

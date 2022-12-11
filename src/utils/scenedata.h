@@ -79,6 +79,9 @@ struct SceneFileMap {
     bool isUsed;
     size_t key;              // Used for texture mapping
     std::string filename;
+    std::string normal_fn;
+    std::string disp_fn;
+    bool parallax;
 
     float repeatU;
     float repeatV;
@@ -87,7 +90,10 @@ struct SceneFileMap {
        isUsed = false;
        repeatU = 0.0f;
        repeatV = 0.0f;
-       filename = std::string();
+       filename  = std::string();
+       normal_fn = std::string();
+       disp_fn   = std::string();
+       parallax  = false;
     }
 };
 

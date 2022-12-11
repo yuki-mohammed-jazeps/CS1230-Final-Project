@@ -4,11 +4,50 @@
 #include "shapes/cone.h"
 #include "shapes/mesh.h"
 #include "shapes/sphere.h"
+#include <iostream>
 #include <tuple>
 
 using std::vector;    using glm::vec3;
 using glm::vec4;      using glm::mat4;
-using std::max;
+using std::max;       using glm::vec2;
+
+// Parallax mapping, given a bunch of verts / uvs,
+// calculate tangents for them
+vector<float> geometry_set::make_tangents(const vector<float> &vertices,
+  const vector<float> &uvs) {
+  vector<float> ret;
+  ret.reserve(vertices.size());
+
+  for (size_t i = 0; i < vertices.size() / 9; ++i) {
+    size_t p_idx = i * 9;
+    size_t t_idx = i * 6;
+
+    auto p0 = vec3(vertices[p_idx],     vertices[p_idx + 1], vertices[p_idx + 2]);
+    auto p1 = vec3(vertices[p_idx + 3], vertices[p_idx + 4], vertices[p_idx + 5]);
+    auto p2 = vec3(vertices[p_idx + 6], vertices[p_idx + 7], vertices[p_idx + 8]);
+    auto t0 = vec2(uvs[t_idx],     uvs[t_idx + 1]);
+    auto t1 = vec2(uvs[t_idx + 2], uvs[t_idx + 3]);
+    auto t2 = vec2(uvs[t_idx + 4], uvs[t_idx + 5]);
+
+    // Get edges and uv diffs
+    auto e0 = p1 - p0;
+    auto e1 = p2 - p0;
+    auto d0 = t1 - t0;
+    auto d1 = t2 - t0;
+
+    // Calculate tangent
+    float inv_factor = 1.f / (d0.x * d1.y - d0.y * d1.x);
+    auto  tan = vec3(inv_factor * (d1.y * e0.x - d0.y * e1.x),
+                     inv_factor * (d1.y * e0.y - d0.y * e1.y),
+                     inv_factor * (d1.y * e0.z - d0.y * e1.z));
+
+    add_to_vec(ret, tan);
+    add_to_vec(ret, tan);
+    add_to_vec(ret, tan);
+  }
+
+  return ret;
+}
 
 // Uniquely identifies shape data in a scene by combining primitive
 // type, tessellation parameter 1, and tessellation parameter 2
@@ -44,21 +83,22 @@ protected:
   bool        has_tex;      // Has an associated texture
   size_t      tex_id;       // Position of texture in textures array
   float       tex_blend;    // How much texture to blend into diffuse
+  bool        has_par;      // Has parallax mapping
 
   friend class geometry_set;
 
 public:
   shape_description(const mat4& mat, const mat4 &inv_mat,
     size_t offset, size_t points, vec3 amb, vec3 dif,
-    vec3 spe, float shi, bool has_tex, size_t tex, float blend) :
+    vec3 spe, float shi, bool has_tex, size_t tex,
+    float blend, bool has_par) :
     model_matrix(&mat), inv_model_matrix(&inv_mat),
     offset(offset), points(points), ambient(amb), diffuse(dif),
     specular(spe), shininess(shi), has_tex(has_tex),
-    tex_id(tex), tex_blend(blend) {};
+    tex_id(tex), tex_blend(blend), has_par(has_par) {};
 };
 
-geometry_set::geometry_set() : valid(false), texturing(false),
-  meshes(false), lod(false), mode(GL_TRIANGLES) {};
+geometry_set::geometry_set() : valid(false), lod(false), meshes(false), texturing(false), mode(GL_TRIANGLES) {};
 
 void geometry_set::initialize(GLuint program_id) {
   // Location of model matrix
@@ -72,6 +112,8 @@ void geometry_set::initialize(GLuint program_id) {
   shi_u = glGetUniformLocation(program_id, "shine");
   tex_u = glGetUniformLocation(program_id, "texturing");
   bld_u = glGetUniformLocation(program_id, "tex_blend");
+  pav_u = glGetUniformLocation(program_id, "parallax_vert");
+  paf_u = glGetUniformLocation(program_id, "parallax_frag");
 
   // VAO for this set of meshes
   glGenVertexArrays(1, &vao_id);
@@ -80,9 +122,11 @@ void geometry_set::initialize(GLuint program_id) {
   glGenBuffers(1, &vbo_id);
   glGenBuffers(1, &ubo_id);
   glGenBuffers(1, &nbo_id);
+  glGenBuffers(1, &tbo_id);
   glGenBuffers(1, &mvo_id);
   glGenBuffers(1, &muo_id);
   glGenBuffers(1, &mno_id);
+  glGenBuffers(1, &mto_id);
 }
 
 // Auxiliary function to handle adding mesh data as its own case (doesn't use
@@ -104,7 +148,8 @@ void geometry_set::add_mesh_data(const RenderShapeData &s) {
     s.primitive.material.shininess,
     s.primitive.material.textureMap.isUsed,
     s.primitive.material.textureMap.key,
-    s.primitive.material.blend);
+    s.primitive.material.blend,
+    s.primitive.material.textureMap.parallax);
 
   // Add data to buffers
   mesh_vertex_buffer_data.insert(mesh_vertex_buffer_data.end(),
@@ -149,7 +194,8 @@ void geometry_set::add_shape_data(const RenderShapeData &s, size_t idx,
     s.primitive.material.shininess,
     s.primitive.material.textureMap.isUsed,
     s.primitive.material.textureMap.key,
-    s.primitive.material.blend);
+    s.primitive.material.blend,
+    s.primitive.material.textureMap.parallax);
 
   // Check if this shape's data already exists in vertex buffer
   auto curr_id = shape_id(s.primitive.type, curr_t_0, curr_t_1);
@@ -287,6 +333,13 @@ void geometry_set::update_data(bool update_meshes) {
   for (size_t i = 0; i != elements; ++i)
     add_shape_data((*shapes)[i], i, update_meshes);
 
+  // Parallax mapping
+  tangent_buffer_data = make_tangents(vertex_buffer_data, uv_buffer_data);
+  if (update_meshes) {
+    mesh_tangent_buffer_data = make_tangents(mesh_vertex_buffer_data,
+      mesh_uv_buffer_data);
+  }
+
   update_buffers(update_meshes);
 }
 
@@ -305,6 +358,8 @@ void geometry_set::draw_shapes(const vector<shape_description> &vec) {
     glUniform3fv(spe_u, 1, &d.specular[0]);
     glUniform1f(shi_u, d.shininess);
     glUniform1f(bld_u, d.tex_blend);
+    glUniform1f(pav_u, d.has_par);
+    glUniform1f(paf_u, d.has_par);
 
     // If this shape is using a texture, bind the
     // correct texture
@@ -364,6 +419,12 @@ void geometry_set::set_vao_tessellated() {
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,
     reinterpret_cast<void*>(0));
+
+  // Send tangent attribute
+  glBindBuffer(GL_ARRAY_BUFFER, tbo_id);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0,
+    reinterpret_cast<void*>(0));
 }
 
 void geometry_set::set_vao_meshes() {
@@ -388,6 +449,12 @@ void geometry_set::set_vao_meshes() {
   glBindBuffer(GL_ARRAY_BUFFER, muo_id);
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,
+    reinterpret_cast<void*>(0));
+
+  // Send tangent attribute
+  glBindBuffer(GL_ARRAY_BUFFER, mto_id);
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0,
     reinterpret_cast<void*>(0));
 }
 
@@ -415,6 +482,12 @@ void geometry_set::update_buffers(bool update_meshes) {
     normal_buffer_data.size() * sizeof(float),
     normal_buffer_data.data(), GL_STATIC_DRAW);
 
+  // Send tangent buffer data
+  glBindBuffer(GL_ARRAY_BUFFER, tbo_id);
+  glBufferData(GL_ARRAY_BUFFER,
+    tangent_buffer_data.size() * sizeof(float),
+    tangent_buffer_data.data(), GL_STATIC_DRAW);
+
   // Only if we changed mesh data
   if (update_meshes) {
     // Send vertex buffer data
@@ -434,6 +507,12 @@ void geometry_set::update_buffers(bool update_meshes) {
     glBufferData(GL_ARRAY_BUFFER,
       mesh_normal_buffer_data.size() * sizeof(float),
       mesh_normal_buffer_data.data(), GL_STATIC_DRAW);
+
+    // Send tangent buffer data
+    glBindBuffer(GL_ARRAY_BUFFER, mto_id);
+    glBufferData(GL_ARRAY_BUFFER,
+      mesh_tangent_buffer_data.size() * sizeof(float),
+      mesh_tangent_buffer_data.data(), GL_STATIC_DRAW);
   }
 
   unbind();
@@ -471,14 +550,17 @@ geometry_set::~geometry_set() {
   glDeleteBuffers(1, &vbo_id);
   glDeleteBuffers(1, &ubo_id);
   glDeleteBuffers(1, &nbo_id);
+  glDeleteBuffers(1, &tbo_id);
   glDeleteBuffers(1, &mvo_id);
   glDeleteBuffers(1, &muo_id);
   glDeleteBuffers(1, &mno_id);
+  glDeleteBuffers(1, &mto_id);
 
   // Cleanup attributes
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(2);
+  glDisableVertexAttribArray(3);
 
   // Delete VAO
   glDeleteVertexArrays(1, &vao_id);
