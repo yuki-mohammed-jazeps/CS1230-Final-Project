@@ -40,6 +40,8 @@ private:
   GLuint bld_u; // Texture mapping
   GLuint pav_u; // Parallax mapping
   GLuint paf_u; // Parallax mapping
+  GLuint urp_u; // Parallax mapping
+  GLuint vrp_u; // Parallax mapping
 
   // Metadata for each shape
   struct shape_description;

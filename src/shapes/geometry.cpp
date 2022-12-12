@@ -84,6 +84,8 @@ protected:
   size_t      tex_id;       // Position of texture in textures array
   float       tex_blend;    // How much texture to blend into diffuse
   bool        has_par;      // Has parallax mapping
+  float       u_repeat;
+  float       v_repeat;
 
   friend class geometry_set;
 
@@ -91,11 +93,12 @@ public:
   shape_description(const mat4& mat, const mat4 &inv_mat,
     size_t offset, size_t points, vec3 amb, vec3 dif,
     vec3 spe, float shi, bool has_tex, size_t tex,
-    float blend, bool has_par) :
+    float blend, bool has_par, float u_rpt, float v_rpt) :
     model_matrix(&mat), inv_model_matrix(&inv_mat),
     offset(offset), points(points), ambient(amb), diffuse(dif),
     specular(spe), shininess(shi), has_tex(has_tex),
-    tex_id(tex), tex_blend(blend), has_par(has_par) {};
+    tex_id(tex), tex_blend(blend), has_par(has_par),
+    u_repeat(u_rpt), v_repeat(v_rpt) {};
 };
 
 geometry_set::geometry_set() : valid(false), lod(false), meshes(false), texturing(false), mode(GL_TRIANGLES) {};
@@ -114,6 +117,8 @@ void geometry_set::initialize(GLuint program_id) {
   bld_u = glGetUniformLocation(program_id, "tex_blend");
   pav_u = glGetUniformLocation(program_id, "parallax_vert");
   paf_u = glGetUniformLocation(program_id, "parallax_frag");
+  urp_u = glGetUniformLocation(program_id, "u_repeat");
+  vrp_u = glGetUniformLocation(program_id, "v_repeat");
 
   // VAO for this set of meshes
   glGenVertexArrays(1, &vao_id);
@@ -149,7 +154,9 @@ void geometry_set::add_mesh_data(const RenderShapeData &s) {
     s.primitive.material.textureMap.isUsed,
     s.primitive.material.textureMap.key,
     s.primitive.material.blend,
-    s.primitive.material.textureMap.parallax);
+    s.primitive.material.textureMap.parallax,
+    s.primitive.material.textureMap.repeatU,
+    s.primitive.material.textureMap.repeatV);
 
   // Add data to buffers
   mesh_vertex_buffer_data.insert(mesh_vertex_buffer_data.end(),
@@ -195,7 +202,9 @@ void geometry_set::add_shape_data(const RenderShapeData &s, size_t idx,
     s.primitive.material.textureMap.isUsed,
     s.primitive.material.textureMap.key,
     s.primitive.material.blend,
-    s.primitive.material.textureMap.parallax);
+    s.primitive.material.textureMap.parallax,
+    s.primitive.material.textureMap.repeatU,
+    s.primitive.material.textureMap.repeatV);
 
   // Check if this shape's data already exists in vertex buffer
   auto curr_id = shape_id(s.primitive.type, curr_t_0, curr_t_1);
@@ -360,6 +369,8 @@ void geometry_set::draw_shapes(const vector<shape_description> &vec) {
     glUniform1f(bld_u, d.tex_blend);
     glUniform1f(pav_u, d.has_par);
     glUniform1f(paf_u, d.has_par);
+      glUniform1f(urp_u, d.u_repeat);
+      glUniform1f(vrp_u, d.v_repeat);
 
     // If this shape is using a texture, bind the
     // correct texture

@@ -23,6 +23,8 @@ texture::texture(const SceneFileMap &filemap, size_t tex_unit) : tex_unit(tex_un
     0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
 
   // Bind parallax mapping files if enabled
   if (filemap.parallax) {
@@ -52,12 +54,16 @@ texture::texture(const SceneFileMap &filemap, size_t tex_unit) : tex_unit(tex_un
       0, GL_RGBA, GL_UNSIGNED_BYTE, nor_img.bits());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
 
     glBindTexture(GL_TEXTURE_2D, dis_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dis_img.width(), dis_img.height(),
       0, GL_RGBA, GL_UNSIGNED_BYTE, dis_img.bits());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT);
   }
 
   glBindTexture(GL_TEXTURE_2D, 0);

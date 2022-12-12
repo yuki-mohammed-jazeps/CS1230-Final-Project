@@ -17,10 +17,14 @@ uniform mat4 model_matrix;
 uniform mat4 inv_model_matrix;
 uniform mat4 pv_matrix;
 
+// Texture repeats
+uniform float u_repeat;
+uniform float v_repeat;
+
 void main() {
   vec_pos = vec3(model_matrix * vec4(pos, 1));
   vec_nor = normalize(transpose(mat3(inv_model_matrix)) * nor);
-  vec_uv  = uv;
+  vec_uv  = uv * vec2(u_repeat, v_repeat);
 
   // Parallax mapping
   if (parallax_vert) {
