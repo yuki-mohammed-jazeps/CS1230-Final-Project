@@ -96,7 +96,6 @@ private:
   // Set vertex and normal data
   void update_data(bool update_meshes);
 
-  // Auxiliary to render shapes in any VAO
   void draw_shapes(const std::vector<shape_description> &vec);
 
 public:
@@ -134,4 +133,8 @@ public:
   // Utility
   static void add_to_vec(std::vector<float> &vec, glm::vec3 p);
   static void add_to_vec(std::vector<float> &vec, glm::vec4 p);
+
+  // Auxiliary to render shapes in any VAO (modified to only draw shapes and not do lighting calc)
+  void draw_shapes_shadows(GLuint shadow_shader);
+
 };

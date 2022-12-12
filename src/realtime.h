@@ -81,4 +81,13 @@ private:
 
     // Camera
     camera cam;
+
+    // Shadowmapping related
+    int MAX_SPOTLIGHTS = 4;  // note: to update this need to update shadowFBO, shadowMap, and uniforms in phong
+    GLuint shadow_shader_id;
+    std::array<GLuint, 4> shadowFBO;  // support for shadow maps for 4 spot lights
+    std::array<GLuint, 4> shadowMap;
+    bool spotLightsInScene = false;  // true if there are any spot lights in the scene
+    std::vector<glm::mat4> spotLightSpaceMats;
+    void updateSpotLightSpaceMat(); // rotates the direction vec by 10eg every call
 };

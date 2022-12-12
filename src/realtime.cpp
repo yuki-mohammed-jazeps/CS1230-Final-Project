@@ -6,6 +6,8 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "settings.h"
 #include "utils/shaderloader.h"
 
@@ -39,6 +41,11 @@ void Realtime::finish() {
   for (auto &t : textures)
     t.cleanup();
 
+  // SHADOW MAPPING RELATED
+  glDeleteFramebuffers(MAX_SPOTLIGHTS, &shadowFBO[0]);
+  glDeleteTextures(MAX_SPOTLIGHTS, &shadowMap[0]);
+  glDeleteProgram(shadow_shader_id);
+
   this->doneCurrent();
 }
 
@@ -70,6 +77,8 @@ void Realtime::initializeGL() {
                                                         "resources/shaders/phong.frag");
   texture_shader_id = ShaderLoader::createShaderProgram("resources/shaders/texture.vert",
                                                         "resources/shaders/texture.frag");
+  shadow_shader_id = ShaderLoader::createShaderProgram("resources/shaders/shadow.vert",
+                                                      "resources/shaders/shadow.frag");
 
   glUseProgram(phong_shader_id);
   // Pass shader to camera
@@ -87,10 +96,100 @@ void Realtime::initializeGL() {
   glUseProgram(texture_shader_id);
   full_quad.initialize(texture_shader_id);
 
+  // --------  SHADOW MAPPING RELATED (set up FBO and depth texture for shadowmap) -------- //
+  for (int i = 0; i < MAX_SPOTLIGHTS; ++i) {
+      std::cout << i << std::endl;
+
+      // The framebuffer
+      glGenFramebuffers(1, &shadowFBO[i]);
+      glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO[i]);
+
+      // Depth texture
+      glGenTextures(1, &shadowMap[i]);
+      glBindTexture(GL_TEXTURE_2D, shadowMap[i]);
+      glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT,  size().width()*m_devicePixelRatio, size().height()*m_devicePixelRatio, 0,GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+      float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+      glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap[i], 0);
+      glDrawBuffer(GL_NONE); // No color buffer is drawn to
+      glReadBuffer(GL_NONE);
+      glBindFramebuffer(GL_FRAMEBUFFER, default_fbo);
+      glBindTexture(GL_TEXTURE_2D, 0);
+  }
+  // ------------------------------------------------------------------------- //
+
   glUseProgram(0);
 }
 
+// input is degrees and axis of rotation
+glm::mat4 rotationMat(float theta, glm::vec3 axis) {
+    axis = glm::normalize(axis);
+    auto ux = axis[0], uy = axis[1], uz = axis[2];
+    theta = glm::radians(theta);
+    float _cos = cos(theta);
+    float _1mcos = 1-_cos;
+    float _sin = sin(theta);
+    return glm::mat4(_cos + ux*ux*_1mcos, ux*uy*_1mcos + uz*_sin, ux*uz*_1mcos - uy*_sin, 0,
+                     ux*uy*_1mcos - uz*_sin, _cos + uy*uy*_1mcos, uy*uz*_1mcos + ux*_sin, 0,
+                     ux*uz*_1mcos + uy*_sin, uy*uz*_1mcos - ux*_sin, _cos + uz*uz*_1mcos, 0,
+                     0, 0, 0, 1);
+}
+
+// SHADOW MAPPING RELATED - rotates the direction vec for all spot lights by 1deg
+void Realtime::updateSpotLightSpaceMat() {
+
+    auto rotMat = rotationMat(1, glm::vec3(0, -1, 0)); // rotates vectors by 1deg along -y axis
+
+    // update the directions for all spot lights in the scene & calculate new light space mats
+    spotLightSpaceMats.clear();  // clear old spotlight space mats
+    for (SceneLightData &light : meta_data.lights) {
+        if (light.type == LightType::LIGHT_SPOT) {
+            light.dir = rotMat*light.dir; // rotate the spot light direction by 1deg
+
+            float FoV = light.angle; // glm::radians(90.0f);
+            glm::mat4 lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
+            glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
+
+            spotLightSpaceMats.push_back(lightProjectionMatrix * lightViewMatrix);
+        }
+    }
+
+    scene_lighting.set_data(meta_data.lights,
+      meta_data.globalData.ka, meta_data.globalData.kd,
+      meta_data.globalData.ks);
+
+}
+
 void Realtime::paintGL() {
+
+    // --------  SHADOW MAPPING RELATED (render the shadow map into shadowMap texture) -------- //
+    if (spotLightsInScene) {  // render shadow map only if there is at least one spot light in the scene
+
+        // updates spotLightSpaceMats - the light space mats after rotating all spot lights by 1deg
+        updateSpotLightSpaceMat();  // NOTE: comment this line out to stop rotating the spotlights
+
+        glUseProgram(shadow_shader_id);
+
+        // For each spotlight, bind shadow buffer, paint shadow map into FBO buffer texture shadowMap
+        for (int i = 0; i < spotLightSpaceMats.size(); ++i) {
+            glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO[i]);
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            glUniformMatrix4fv(glGetUniformLocation(shadow_shader_id, "spotLightSpaceMat"), 1, GL_FALSE, &spotLightSpaceMats[i][0][0]);
+            scene_objects.draw_shapes_shadows(shadow_shader_id);
+        }
+
+        glUseProgram(0);
+
+    }
+    // ------------------------------------------------------------------------- //
+
+
   // Render to fullscreen quad's texture
   full_quad.set_as_canvas();
 
@@ -105,6 +204,18 @@ void Realtime::paintGL() {
     cam.send_uniforms();
   if (scene_lighting.should_update())
     scene_lighting.send_uniforms();
+
+  // --------  SHADOW MAPPING RELATED ------------- //
+  if (spotLightsInScene) {  // send uniforms required to render shadows for spot lights in the scene
+      for (int i = 0; i < spotLightSpaceMats.size(); ++i) {
+          glActiveTexture(GL_TEXTURE7+i);
+          glBindTexture(GL_TEXTURE_2D, shadowMap[i]);  // bind shadowmap depth texture
+
+          glUniform1i(glGetUniformLocation(phong_shader_id, ("shadowMap[" + std::to_string(i) + "]").c_str()), 7+i);
+          glUniformMatrix4fv(glGetUniformLocation(phong_shader_id, ("spotLightSpaceMat[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, &spotLightSpaceMats[i][0][0]);
+      }
+  }
+  // -------------------------------------------- //
 
   // Draw meshes in our master set
   scene_objects.draw();
@@ -129,6 +240,13 @@ void Realtime::resizeGL(int w, int h) {
   cam.update_size(size().width(), size().height());
 
   full_quad.make_fbo();
+
+  // update the shadow map textures to match the view port
+  for (int i = 0; i < MAX_SPOTLIGHTS; ++i) {
+      glBindTexture(GL_TEXTURE_2D, shadowMap[i]);
+      glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT,  size().width()*m_devicePixelRatio, size().height()*m_devicePixelRatio, 0,GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+      glBindTexture(GL_TEXTURE_2D, 0);
+  }
 }
 
 void Realtime::sceneChanged() {
@@ -172,6 +290,24 @@ void Realtime::sceneChanged() {
   scene_lighting.set_data(meta_data.lights,
     meta_data.globalData.ka, meta_data.globalData.kd,
     meta_data.globalData.ks);
+
+  // --------  SHADOW MAPPING RELATED ------------- //
+  spotLightsInScene = false;
+  spotLightSpaceMats.clear();
+  // loops over lights and saves the lightSpaceMats for all spot lights
+  for (SceneLightData &light : meta_data.lights) {
+      if (light.type == LightType::LIGHT_SPOT) {
+          spotLightsInScene = true;
+
+          float FoV = light.angle; // glm::radians(90.0f);
+          glm::mat4 lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
+          glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
+
+          spotLightSpaceMats.push_back(lightProjectionMatrix * lightViewMatrix);
+      }
+  }
+  // --------------------------------------------- //
+
 
   // Set mesh data
   scene_objects.set_data(meta_data.shapes, cam.get_pos(), textures);
