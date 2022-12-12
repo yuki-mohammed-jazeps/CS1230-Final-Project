@@ -156,7 +156,6 @@ void Realtime::updateSpotLightSpaceMat() {
 
             float FoV = light.angle; // glm::radians(90.0f);
             glm::mat4 lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
-
             glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
 
             spotLightSpaceMats.push_back(lightProjectionMatrix * lightViewMatrix);
@@ -206,7 +205,7 @@ void Realtime::paintGL() {
   if (scene_lighting.should_update())
     scene_lighting.send_uniforms();
 
-  if (spotLightsInScene) {  // send uniforms required to render shadow map for spot light
+  if (spotLightsInScene) {  // send uniforms required to render shadows for spot lights in the scene
 
       for (int i = 0; i < spotLightSpaceMats.size(); ++i) {
           glActiveTexture(GL_TEXTURE7+i);

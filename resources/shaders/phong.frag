@@ -33,11 +33,10 @@ uniform float light_penumbras[8];
 uniform vec3  light_functions[8];
 uniform vec3  camera_pos;
 
-// shadow mapping related (meant to ass shadows to the first spot light only, might not work as intended if multiple spot lights in scene)
+// shadow mapping related
+int spotLightNum = 0;  // used to index into below uniforms - this is incremented after calculate_shadow is called
 uniform sampler2D shadowMap[4];
 uniform mat4 spotLightSpaceMat[4];
-
-int spotLightNum = 0;
 
 float calculate_shadow(float bias)
 {
