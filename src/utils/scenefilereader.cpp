@@ -283,6 +283,16 @@ bool parseMap(const QDomElement &e, SceneFileMap &map, const std::filesystem::pa
    map.repeatU = e.hasAttribute("u") ? e.attribute("u").toFloat() : 1;
    map.repeatV = e.hasAttribute("v") ? e.attribute("v").toFloat() : 1;
    map.isUsed = true;
+
+   if (e.hasAttribute("normal") && e.hasAttribute("displacement")) {
+    std::filesystem::path normal_relative(e.attribute("normal").toStdString());
+    std::filesystem::path disp_relative(e.attribute("displacement").toStdString());
+
+    map.normal_fn = (basepath / normal_relative).string();
+    map.disp_fn   = (basepath / disp_relative).string();
+    map.parallax  = true;
+   }
+
    return true;
 }
 

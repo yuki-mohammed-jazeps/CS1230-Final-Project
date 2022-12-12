@@ -18,9 +18,11 @@ private:
   GLuint vbo_id; // Vertices
   GLuint ubo_id; // UVs
   GLuint nbo_id; // Normals
+  GLuint tbo_id; // Tangents
   GLuint mvo_id; // Mesh vertices
   GLuint muo_id; // Mesh UVs
   GLuint mno_id; // Mesh normals
+  GLuint mto_id; // Mesh tangents
 
   // OpenGL VAO
   GLuint vao_id;
@@ -36,6 +38,8 @@ private:
   GLuint shi_u;
   GLuint tex_u; // Texture mapping
   GLuint bld_u; // Texture mapping
+  GLuint pav_u; // Parallax mapping
+  GLuint paf_u; // Parallax mapping
 
   // Metadata for each shape
   struct shape_description;
@@ -57,11 +61,13 @@ private:
   std::vector<float> vertex_buffer_data;
   std::vector<float> uv_buffer_data;
   std::vector<float> normal_buffer_data;
+  std::vector<float> tangent_buffer_data;
 
   // Extra credit, data buffers for meshes
   std::vector<float> mesh_vertex_buffer_data;
   std::vector<float> mesh_uv_buffer_data;
   std::vector<float> mesh_normal_buffer_data;
+  std::vector<float> mesh_tangent_buffer_data;
 
   // Count of all elements (points, lines, polys) to render
   size_t elements = 0;
@@ -97,6 +103,10 @@ private:
   void update_data(bool update_meshes);
 
   void draw_shapes(const std::vector<shape_description> &vec);
+
+  // Auxiliary to make tangents from triangles
+  std::vector<float> make_tangents(const std::vector<float> &vertices,
+    const std::vector<float> &uvs);
 
 public:
    geometry_set();

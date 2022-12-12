@@ -12,6 +12,8 @@ private:
   size_t tex_unit;
 public:
   GLuint tex_id;
+  GLuint nor_id;
+  GLuint dis_id;
   texture(const SceneFileMap &filemap, size_t tex_unit);
 
   void bind() const;
