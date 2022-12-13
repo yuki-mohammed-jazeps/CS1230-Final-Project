@@ -85,11 +85,32 @@ float calculate_shadow(float bias)
 
 // Parallax mapping
 vec2 displace_parallax(vec3 camera_pos) {
+  // Get tangent space direction to camera
   mat3 inv_tangent_matrix = transpose(tangent_matrix);
   vec3 to_camera = normalize(inv_tangent_matrix * camera_pos - inv_tangent_matrix * vec_pos);
-  float height = texture(disp_map, vec_uv).r;
-  vec2  displacement = (to_camera.xy / to_camera.z) * height * 0.1;
-  return vec_uv - displacement;
+  to_camera.y *= -1;
+
+  // Number of layers to sample depends on viewing angle
+  float angle         = max(0.f, dot(vec3(0.f, 0.f, 1.f), to_camera));
+  float sample_layers = (28.f * angle) + 4; // 4 to 32 samples
+  float layer_theta   = 1.f / sample_layers;
+
+  // Parallax vector calculation, rise off of texture depends on displacement map
+  vec2 parallax_vector = to_camera.xy * 0.1f;
+  vec2 coord_theta     = parallax_vector / sample_layers;
+
+  // Step over layers until we find height larger than current height
+  vec2  uv_coords  = vec_uv;
+  float curr_disp  = texture(disp_map, uv_coords).r;
+  float curr_depth = 0.f;
+
+  while (curr_depth < curr_disp) {
+    uv_coords  -= coord_theta;
+    curr_disp   = texture(disp_map, uv_coords).r;
+    curr_depth += layer_theta;
+  }
+
+  return uv_coords;
 }
 
 // Calculate falloff for spotlights
@@ -101,8 +122,8 @@ float calculate_falloff(float theta, float outer, float penumbra) {
   if (theta > outer)
     return 0.f;
 
-  return 1 - (-2.f * pow(((theta - inner) / (outer - inner)), 3.f) +
-               3.f * pow(((theta - inner) / (outer - inner)), 2.f));
+  return 1.f - (-2.f * pow(((theta - inner) / (outer - inner)), 3.f) +
+                 3.f * pow(((theta - inner) / (outer - inner)), 2.f));
 }
 
 // Sets color coefficients and light direction for the different kinds of light
@@ -171,17 +192,14 @@ void main() {
       if(uv_coords.x > u_repeat || uv_coords.y > v_repeat ||
          uv_coords.x < 0.0      || uv_coords.y < 0.0)
         discard;
-    }
 
-    vec4 tex_color = texture(tex, uv_coords);
-    diff = mix(diff, vec3(tex_color), tex_blend);
-
-    // Parallax
-    if (parallax_frag) {
       normal = texture(normal_map, uv_coords).rgb;
       normal = normalize(normal * 2.0 - 1.0);
       normal = normalize(tangent_matrix * normal);
     }
+
+    vec4 tex_color = texture(tex, uv_coords);
+    diff = mix(diff, vec3(tex_color), tex_blend);
   }
 
   // Specular light coefficient

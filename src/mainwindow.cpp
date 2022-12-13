@@ -202,7 +202,7 @@ void MainWindow::initialize() {
     onValChangeFarBox(40.f);
 
     // Default FBO
-    onValChangeFBO(2);
+    onValChangeFBO(6);
 }
 
 void MainWindow::finish() {

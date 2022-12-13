@@ -12,7 +12,7 @@ texture::texture(const SceneFileMap &filemap, size_t tex_unit) : tex_unit(tex_un
   else
     cout << "Done loading texture: " << filepath << endl;
 
-  img = img.convertToFormat(QImage::Format_RGBA8888).mirrored();
+  img = img.convertToFormat(QImage::Format_RGBA8888);
 
   // Generate texture through OpenGL
   glGenTextures(1, &tex_id);
@@ -41,8 +41,8 @@ texture::texture(const SceneFileMap &filemap, size_t tex_unit) : tex_unit(tex_un
     else
       cout << "Done loading texture: " << disp_fp << endl;
 
-    nor_img = nor_img.convertToFormat(QImage::Format_RGBA8888).mirrored();
-    dis_img = dis_img.convertToFormat(QImage::Format_RGBA8888).mirrored();
+    nor_img = nor_img.convertToFormat(QImage::Format_RGBA8888);
+    dis_img = dis_img.convertToFormat(QImage::Format_RGBA8888);
 
     // Generate textures through OpenGL
     glGenTextures(1, &nor_id);
