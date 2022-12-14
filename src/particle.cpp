@@ -54,7 +54,7 @@ glm::vec2 randCirc(){
     return glm::vec2(len * cos(theta), len * sin(theta));
 }
 
-float lerp(float x, float y, float t) {
+float y_lerp(float x, float y, float t) {
   return x * (1.f - t) + y * t;
 }
 
@@ -62,7 +62,7 @@ void particle::particleRevive(int i){
     glm::vec2 randPoint = randCirc();
     particles[i].position = glm::vec3(randPoint.x, 0,randPoint.y);
     float dist = glm::distance(center, glm::vec2(particles[i].position.x, particles[i].position.z));
-    particles[i].life = uniform() * lerp(5, 0, pow(dist, 0.1)) * mag;
+    particles[i].life = uniform() * y_lerp(5, 0, pow(dist, 0.1)) * mag;
 }
 
 void particle::updatePositions(int i){
