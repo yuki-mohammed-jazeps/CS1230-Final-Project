@@ -82,6 +82,7 @@ private:
   bool lod;
   bool meshes;
   bool texturing;
+  bool parallax;
   const std::vector<texture> *textures;
 
   // Points, lines, polys, etc.
@@ -128,6 +129,7 @@ public:
   void update_lod(bool new_lod);
   void update_meshes_display(bool new_meshes);
   void update_texturing(bool new_texturing);
+  void update_parallax(bool new_parallax);
 
   // Draw everything
   void draw();

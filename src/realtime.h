@@ -74,6 +74,7 @@ private:
     bool extra_lod;
     bool extra_meshes;
     bool extra_texturing;
+    bool extra_parallax;
 
     // Used to change the default FBO since it might be machine dependant
     int default_fbo;
@@ -86,13 +87,17 @@ private:
 
     // Shadowmapping related
     int MAX_SPOTLIGHTS = 4;  // note: to update this need to update shadowFBO, shadowMap, and uniforms in phong
+    GLint  shadow_bool_u;
     GLuint shadow_shader_id;
     std::array<GLuint, 4> shadowFBO;  // support for shadow maps for 4 spot lights
     std::array<GLuint, 4> shadowMap;
     bool spotLightsInScene = false;  // true if there are any spot lights in the scene
     std::vector<glm::mat4> spotLightSpaceMats;
-    void updateSpotLightSpaceMat(); // rotates the direction vec by 10eg every call
+    void updateSpotLightSpaceMat(float deltaTime); // rotates the direction vec by 10eg every call
 
     //particle
     particle part = particle();
+
+    // Bool to keep track of if we can send uniforms
+    bool initialized;
 };

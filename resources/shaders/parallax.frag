@@ -44,6 +44,7 @@ uniform vec3  light_functions[8];
 uniform vec3  camera_pos;
 
 // shadow mapping related
+uniform bool do_shadows;
 int spotLightNum = 0;  // used to index into below uniforms - this is incremented after calculate_shadow is called
 uniform sampler2D shadowMap[4];
 uniform mat4 spotLightSpaceMat[4];
@@ -245,7 +246,7 @@ void main() {
 
     // Shadow calculation
     float shadow = 0;  // no shadow by default
-    if (light_types[i] == 2) {  // only calculate shadow if spot light
+    if (light_types[i] == 2 && do_shadows) {  // only calculate shadow if spot light
         float bias = max(0.0005 * (1.0 - dot(-to_light, normal) ), 0.00005f);  // bias to avoid self-shadowing (tinker with max and min val)
         shadow =  calculate_shadow(bias);
         spotLightNum += 1;
@@ -253,8 +254,5 @@ void main() {
 
     // Put it all together
     fragcolor += vec4(base_colors * (1 - shadow) * (curr_diffuse + curr_spec), 0.f);
-
-    // Put it all together
-    //fragcolor += vec4(base_colors * (curr_diffuse + curr_spec), 0.f);
   }
 }

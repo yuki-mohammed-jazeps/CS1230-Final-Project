@@ -17,7 +17,9 @@ struct Settings {
     bool extraCredit3 = false;
     bool extraCredit4 = false;
     bool extraCredit5 = false;
-    bool fire = true;
+    bool extra_parallax = false;
+    bool shadows = false;
+    bool fire = false;
 };
 
 

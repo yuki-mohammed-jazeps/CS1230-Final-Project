@@ -101,7 +101,8 @@ public:
     u_repeat(u_rpt), v_repeat(v_rpt) {};
 };
 
-geometry_set::geometry_set() : valid(false), lod(false), meshes(false), texturing(false), mode(GL_TRIANGLES) {};
+geometry_set::geometry_set() : valid(false), lod(false), meshes(false),
+  texturing(false), parallax(false), mode(GL_TRIANGLES) {};
 
 void geometry_set::initialize(GLuint program_id) {
   // Location of model matrix
@@ -367,10 +368,8 @@ void geometry_set::draw_shapes(const vector<shape_description> &vec) {
     glUniform3fv(spe_u, 1, &d.specular[0]);
     glUniform1f(shi_u, d.shininess);
     glUniform1f(bld_u, d.tex_blend);
-    glUniform1f(pav_u, d.has_par);
-    glUniform1f(paf_u, d.has_par);
-      glUniform1f(urp_u, d.u_repeat);
-      glUniform1f(vrp_u, d.v_repeat);
+    glUniform1f(urp_u, d.u_repeat);
+    glUniform1f(vrp_u, d.v_repeat);
 
     // If this shape is using a texture, bind the
     // correct texture
@@ -379,6 +378,15 @@ void geometry_set::draw_shapes(const vector<shape_description> &vec) {
       (*textures)[d.tex_id].bind();
     } else {
       glUniform1i(tex_u, 0);
+    }
+
+    // Send parallax information if we have it enabled
+    if (parallax && d.has_par) {
+      glUniform1i(pav_u, true);
+      glUniform1i(paf_u, true);
+    } else {
+      glUniform1i(pav_u, false);
+      glUniform1i(paf_u, false);
     }
 
     // Draw this shape
@@ -571,6 +579,11 @@ void geometry_set::update_meshes_display(bool new_meshes) {
 // Updates stored texturing bool
 void geometry_set::update_texturing(bool new_texturing) {
   texturing = new_texturing;
+}
+
+// Updates stored parallax bool
+void geometry_set::update_parallax(bool new_parallax) {
+  parallax = new_parallax;
 }
 
 // Updates stored tessellation params, and updates

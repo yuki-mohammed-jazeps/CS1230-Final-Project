@@ -17,7 +17,8 @@ using std::string;
 // ================== Project 5: Lights, Camera
 
 Realtime::Realtime(QWidget *parent)
-  : QOpenGLWidget(parent), extra_lod(false), extra_meshes(false)
+  : QOpenGLWidget(parent), extra_lod(false), extra_meshes(false),
+    initialized(false)
 {
   m_prev_mouse_pos = glm::vec2(size().width()/2, size().height()/2);
   setMouseTracking(true);
@@ -98,14 +99,15 @@ void Realtime::initializeGL() {
   GLint p_dis_u = glGetUniformLocation(phong_shader_id, "disp_map");
   glUniform1i(p_dis_u, 2);
 
+  // Store uniform for shadow enabling / disabling
+  shadow_bool_u = glGetUniformLocation(phong_shader_id, "do_shadows");
+
   // Initialize uniforms for the fullscreen quad
   glUseProgram(texture_shader_id);
   full_quad.initialize(texture_shader_id);
 
   // --------  SHADOW MAPPING RELATED (set up FBO and depth texture for shadowmap) -------- //
   for (int i = 0; i < MAX_SPOTLIGHTS; ++i) {
-      std::cout << i << std::endl;
-
       // The framebuffer
       glGenFramebuffers(1, &shadowFBO[i]);
       glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO[i]);
@@ -131,6 +133,8 @@ void Realtime::initializeGL() {
   part.particleInit();
 
   glUseProgram(0);
+
+  initialized = true;
 }
 
 // input is degrees and axis of rotation
@@ -148,9 +152,9 @@ glm::mat4 rotationMat(float theta, glm::vec3 axis) {
 }
 
 // SHADOW MAPPING RELATED - rotates the direction vec for all spot lights by 1deg
-void Realtime::updateSpotLightSpaceMat() {
+void Realtime::updateSpotLightSpaceMat(float deltaTime) {
 
-    auto rotMat = rotationMat(1, glm::vec3(0, -1, 0)); // rotates vectors by 1deg along -y axis
+    auto rotMat = rotationMat(50 * deltaTime, glm::vec3(0, -1, 0)); // rotates vectors by 1deg along -y axis
 
     // update the directions for all spot lights in the scene & calculate new light space mats
     spotLightSpaceMats.clear();  // clear old spotlight space mats
@@ -169,18 +173,11 @@ void Realtime::updateSpotLightSpaceMat() {
     scene_lighting.set_data(meta_data.lights,
       meta_data.globalData.ka, meta_data.globalData.kd,
       meta_data.globalData.ks);
-
 }
 
 void Realtime::paintGL() {
-//    std::cout<<cam.get
-
     // --------  SHADOW MAPPING RELATED (render the shadow map into shadowMap texture) -------- //
     if (spotLightsInScene) {  // render shadow map only if there is at least one spot light in the scene
-
-        // updates spotLightSpaceMats - the light space mats after rotating all spot lights by 1deg
-        updateSpotLightSpaceMat();  // NOTE: comment this line out to stop rotating the spotlights
-
         glUseProgram(shadow_shader_id);
 
         // For each spotlight, bind shadow buffer, paint shadow map into FBO buffer texture shadowMap
@@ -214,6 +211,7 @@ void Realtime::paintGL() {
     scene_lighting.send_uniforms();
 
   // --------  SHADOW MAPPING RELATED ------------- //
+  glUniform1i(shadow_bool_u, settings.shadows);
   if (spotLightsInScene) {  // send uniforms required to render shadows for spot lights in the scene
       for (int i = 0; i < spotLightSpaceMats.size(); ++i) {
           glActiveTexture(GL_TEXTURE7+i);
@@ -228,7 +226,8 @@ void Realtime::paintGL() {
   // Draw meshes in our master set
   scene_objects.draw();
 
-  part.particleDraw(cam);
+  if (settings.fire)
+    part.particleDraw(cam);
 
   ////////////////////////////
   // Render fullscreen quad //
@@ -363,6 +362,12 @@ void Realtime::settingsChanged() {
     extra_texturing = settings.extraCredit3;
   }
 
+  // Extra credits: parallax
+  if (settings.extra_parallax != extra_parallax) {
+    scene_objects.update_parallax(settings.extra_parallax);
+    extra_parallax = settings.extra_parallax;
+  }
+
   // Customizable default FBO and postprocessing filters
   default_fbo = settings.defaultFBO;
 
@@ -432,6 +437,10 @@ void Realtime::timerEvent(QTimerEvent *event) {
   cam.move(m_keyMap[Qt::Key_W], m_keyMap[Qt::Key_A],
     m_keyMap[Qt::Key_S], m_keyMap[Qt::Key_D],
     m_keyMap[Qt::Key_Control], m_keyMap[Qt::Key_Space], deltaTime);
+
+
+  // updates spotLightSpaceMats - the light space mats after rotating all spot lights by 1deg
+  updateSpotLightSpaceMat(deltaTime);  // NOTE: comment this line out to stop rotating the spotlights
 
   update(); // asks for a PaintGL() call to occur
 }
