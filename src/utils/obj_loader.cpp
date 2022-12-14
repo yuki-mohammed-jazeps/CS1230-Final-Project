@@ -101,7 +101,7 @@ obj_loader::obj_loader(string fp) : success(false)
       ++last_vertex;
     // UV
     } else if (toks[0] == "vt") {
-      if (toks.size() != 3) {
+      if (toks.size() < 3) {
         cerr << "Malformed obj file: " << line << endl;
         return;
       }

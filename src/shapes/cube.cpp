@@ -17,16 +17,16 @@ static inline vec2 cube_uv(const vec3 &p, const vec3 &n) {
     return vec2(-p.z + 0.5, -p.y + 0.5);
   // X-
   if (abs(n.x + 1.f) < 0.01)
-    return vec2(p.z + 0.5, -p.y + 0.5);
+    return vec2(p.z + 0.5,  -p.y + 0.5);
   // Y+
   if (abs(n.y - 1.f) < 0.01)
-    return vec2(p.x + 0.5, p.z + 0.5);
+    return vec2(p.x + 0.5,  -p.z + 0.5);
   // Y-
   if (abs(n.y + 1.f) < 0.01)
-    return vec2(p.x + 0.5, -p.z + 0.5);
+    return vec2(p.x + 0.5,  -p.z + 0.5);
   // Z+
   if (abs(n.z - 1.f) < 0.01)
-    return vec2(p.x + 0.5, -p.y + 0.5);
+    return vec2(p.x + 0.5,  -p.y + 0.5);
   // Z-
   if (abs(n.z + 1.f) < 0.01)
     return vec2(-p.x + 0.5, -p.y + 0.5);
@@ -35,7 +35,7 @@ static inline vec2 cube_uv(const vec3 &p, const vec3 &n) {
 
 void cube::make_tile(vec3 top_left, vec3 top_right,
   vec3 bottom_left, vec3 bottom_right) {
-  auto n_0 = normalize((cross(bottom_left - top_left, top_right - top_left)));
+  auto n_0 = normalize((cross(bottom_left - top_left,  top_right - top_left)));
   auto n_1 = normalize((cross(bottom_left - top_right, bottom_right - top_right)));
 
   insert_vec3(vertex_data, top_left);

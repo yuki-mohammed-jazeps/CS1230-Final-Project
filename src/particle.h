@@ -2,7 +2,6 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "settings.h"
 #include "camera.h"
 #include <QOpenGLWidget>
 
@@ -23,7 +22,7 @@ public:
     void particleFinish();
 
 private:
-    glm::vec3 firePos = glm::vec3(0, 0, 0);
+    glm::vec3 firePos = glm::vec3(-5, -0.4, -3);
 
 //    camera cam;
     float spawnRadius = 1.0;

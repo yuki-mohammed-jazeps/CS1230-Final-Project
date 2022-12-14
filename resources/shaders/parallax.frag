@@ -199,7 +199,12 @@ void main() {
     }
 
     vec4 tex_color = texture(tex, uv_coords);
+
+    if (tex_color.w < 0.1)
+      discard;
+
     diff = mix(diff, vec3(tex_color), tex_blend);
+    fragcolor.w = tex_color.w;
   }
 
   // Specular light coefficient

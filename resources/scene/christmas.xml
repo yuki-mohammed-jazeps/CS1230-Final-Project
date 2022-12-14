@@ -1,0 +1,145 @@
+<!-- courtesy of psastras, 2009 -->
+<scenefile>
+    <globaldata>
+        <diffusecoeff v="0.5"/>
+        <specularcoeff v="0.5"/>
+        <ambientcoeff v="0.5"/>
+    </globaldata>
+
+    <lightdata>
+        <id v="0"/>
+        <color r="1" g="1" b="1"/>
+        <position x="3" y="3" z="3"/>
+    </lightdata>
+
+    <cameradata>
+        <pos x="0.6" y="3" z="7"/>
+        <focus x="-2" y="2" z="0"/>
+        <up x="0" y="1" z="0"/>
+        <heightangle v="45"/>
+    </cameradata>
+
+   <lightdata>
+		<id v="0"/>
+		<type v="spot"/>
+		<color r="0.9" g="0.9" b="0.2"/>
+		<direction x="0.5" y="-0.5" z="0"/>
+		<position x="-1" y="2" z="0"/>
+		<penumbra v="4"/>
+		<angle v="30"/>
+		<function x="0.2" y="0.05" z="0.0"/>
+	</lightdata>
+
+
+	<lightdata>
+		<id v="1"/>
+		<type v="spot"/>
+		<color r="0.2" g="0.9" b="0.2"/>
+		<direction x="0" y="-1" z="-1"/>
+		<position x="0" y="2" z="1.5"/>
+		<penumbra v="4"/>
+		<angle v="30"/>
+		<function x="0.2" y="0.05" z="0.0"/>
+	</lightdata>
+
+	<lightdata>
+		<id v="2"/>
+		<type v="spot"/>
+		<color r="0.9" g="0.2" b="0.0"/>
+		<direction x="0" y="-1" z="1"/>
+		<position x="0" y="2" z="-1.5"/>
+		<penumbra v="4"/>
+		<angle v="30"/>
+		<function x="0.2" y="0.05" z="0.0"/>
+	</lightdata>
+
+	<lightdata>
+		<id v="3"/>
+		<type v="spot"/>
+		<color r="0.9" g="0.9" b="0.9"/>
+		<direction x="0" y="-1" z="0"/>
+		<position x="0" y="4" z="0"/>
+		<penumbra v="10"/>
+		<angle v="13"/>
+		<function x="0.8" y="0.05" z="0.0"/>
+	</lightdata>
+
+
+
+    <object type="tree" name="root">
+        <transblock>
+			<translate x="-5" y="-0.6" z="-3"/>
+			<scale x="1.7" y="1.7" z="1.7" />
+            <object type="primitive" name="mesh" meshfile="mesh/fireplace.obj">
+		<texture file="image/marble.jpg" u="1" v="1"/>
+		<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+                <specular r="0.9" g="0.9" b="0.9"/>
+                <shininess v="100"/>
+            </object>
+        </transblock>
+
+	<transblock>
+			<translate x="0.6" y="-0.45" z="-1.7"/>
+			<scale x="0.004" y="0.004" z="0.004" />
+            <object type="primitive" name="mesh" meshfile="mesh/christmas_tree.obj">
+		<texture file="image/christmas_tree.png" u="1" v="1"/>
+		<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+                <specular r="0.9" g="0.9" b="0.9"/>
+                <shininess v="100"/>
+            </object>
+        </transblock>
+
+		<transblock>
+			<translate x="-2" y="-0.6" z="0"/>
+			<scale x="12" y="0.1" z="7"/>
+			<object type="primitive" name="cube" >
+				<reflective r="1" g="1" b="1"/>
+				<diffuse r="0.4" g="0.5" b="0.6"/>
+				<texture file="image/laminate_floor_diff_4k.jpg" u="2" v="1"/>
+				<blend v="0.8"/>
+			</object>
+		</transblock>
+		<transblock>
+			<translate x="-2" y="-0.5" z="0"/>
+			<scale x="8" y="0.0001" z="4"/>
+			<object type="primitive" name="cube" >
+				<reflective r="1" g="1" b="1"/>
+				<diffuse r="0.4" g="0.5" b="0.6"/>
+				<texture file="image/rug.png" u="1" v="1"/>
+				<blend v="0.8"/>
+			</object>
+		</transblock>
+		<transblock>
+			<translate x="-2.5" y="1" z="-4"/>
+			<scale x="11" y="7" z="1"/>
+			<object type="primitive" name="cube" >
+				<diffuse r="0.8" g="0.6" b="0.6"/>
+				<texture file="image/bricks2.jpg" normal="image/bricks2_normal.jpg" displacement="image/bricks2_disp.jpg" u="7" v="5"/>
+				<blend v="0.8"/>
+			</object>
+		</transblock>
+		<transblock>
+			<translate x="3" y="1" z="0.1"/>
+			<scale x="1" y="7" z="7.5"/>
+			<object type="primitive" name="cube" >
+				<diffuse r="0.8" g="0.6" b="0.6"/>
+				<texture file="image/bricks2.jpg" normal="image/bricks2_normal.jpg" displacement="image/bricks2_disp.jpg" u="5" v="5"/>
+				<blend v="0.8"/>
+			</object>
+		</transblock>
+		<transblock>
+			<translate x="-8" y="1" z="0.1"/>
+			<scale x="1" y="7" z="7.5"/>
+			<object type="primitive" name="cube" >
+				<diffuse r="0.8" g="0.6" b="0.6"/>
+				<texture file="image/bricks2.jpg" normal="image/bricks2_normal.jpg" displacement="image/bricks2_disp.jpg" u="5" v="5"/>
+				<blend v="0.8"/>
+			</object>
+		</transblock>
+    </object>
+
+</scenefile>
