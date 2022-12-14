@@ -16,14 +16,14 @@ public:
     };
 
     void particleInit();
-    void particleDraw();
+    void particleDraw(camera &cam);
     void particleUpdate();
     void particleRevive(int i);
     void updatePositions(int i);
     void particleFinish();
 
 private:
-    camera cam;
+//    camera cam;
     float spawnRadius = 1.0;
     int particleSize = 50000;
     int particlelDataSize = 4;

@@ -228,7 +228,7 @@ void Realtime::paintGL() {
   // Draw meshes in our master set
   scene_objects.draw();
 
-  part.particleDraw();
+  part.particleDraw(cam);
 
   ////////////////////////////
   // Render fullscreen quad //

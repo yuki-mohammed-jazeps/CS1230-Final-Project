@@ -93,7 +93,7 @@ void particle::particleUpdate(){
 }
 
 
-void particle::particleDraw(){
+void particle::particleDraw(camera &cam){
     mag = uniform() * 5;
     timer += 1;
 

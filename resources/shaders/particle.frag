@@ -14,7 +14,7 @@ void main()
     vec4 tex = texture(u_part_texture, frag_uv);
     float intensity = 0.299 * tex.x + 0.587 * tex.y + 0.114F * tex.z;
 //    if (coordY < 0.01 ) intensity*=coordY*100;
-    if (intensity < 0.03) discard;
+    if (intensity < 0.5) discard;
     vec3 color;
 
     if (life < 0.1){
@@ -35,6 +35,6 @@ void main()
 //    }
 
 
-//    FragColor = vec4(color, intensity * 0.9);
-    FragColor = vec4(1.0);
+    FragColor = vec4(color, intensity * 0.9);
+//    FragColor = vec4(1.0);
 }
