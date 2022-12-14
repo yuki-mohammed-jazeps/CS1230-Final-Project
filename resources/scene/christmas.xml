@@ -134,8 +134,23 @@
 		<transblock>
 			<translate x="1.5" y="-0.6" z="0"/>
 			<scale x="9" y="9" z="9" />
+			<rotate x="0.0" y="1" z="0.0" angle="-40.0" />
             <object type="primitive" name="mesh" meshfile="mesh/gift3.obj">
 				<texture file="image/PresentColor.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+                <specular r="0.9" g="0.9" b="0.9"/>
+                <shininess v="100"/>
+            </object>
+        </transblock>
+
+		<transblock>
+			<translate x="0" y="-0.1" z="0"/>
+			<rotate x="0.0" y="1" z="0.0" angle="-30.0" />
+			<scale x="3" y="3" z="3" />
+            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
+				<texture file="image/cube_diffuse.png" u="1" v="1"/>
 				<blend v="1"/>
                 <diffuse r="0.9" g="0.9" b="0.9"/>
                 <ambient r="0.3" g="0.2" b="0.1"/>
