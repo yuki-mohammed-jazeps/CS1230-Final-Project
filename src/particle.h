@@ -23,6 +23,8 @@ public:
     void particleFinish();
 
 private:
+    glm::vec3 firePos = glm::vec3(0, 0, 0);
+
 //    camera cam;
     float spawnRadius = 1.0;
     int particleSize = 50000;

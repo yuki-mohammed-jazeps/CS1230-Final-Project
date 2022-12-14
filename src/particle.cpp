@@ -14,7 +14,7 @@ float randam() {
 void particle::particleInit(){
     particles.resize(particleSize);
     positions.resize(particleSize * particlelDataSize);
-//    m_part_model = glm::translate(m_part_model, glm::vec3(5.0, 5.0, 5.0));
+    m_part_model = glm::translate(m_part_model, firePos);
 
     QString particle_filepath = QString(":/resources/scene/Particle.png");
 
