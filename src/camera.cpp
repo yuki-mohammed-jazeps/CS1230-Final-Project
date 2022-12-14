@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "settings.h"
 #include "utils/transforms.h"
+#include "glm/gtx/string_cast.hpp"
 
 using glm::mat4;    	using glm::inverse;
 using glm::vec4;        using glm::normalize;
@@ -176,4 +177,18 @@ void camera::rotate_up(float angle) {
                         transforms::manual_rotate_arbitrary(angle, right)),
               0.f);
   update_position();
+}
+
+void camera::send_particleUiforms(GLuint m_particle_shader, glm::mat4 part_model_matrix){
+    glm::mat4 particle_mvp = proj_matrix * view_matrix * part_model_matrix;
+//    std::cout << glm::to_string(particle_mvp) << std::endl;
+    GLuint location = glGetUniformLocation(m_particle_shader, "mvp");
+    glUniformMatrix4fv(location, 1, false, &particle_mvp[0][0]);
+
+    glm::vec3 CameraRight_worldspace = {view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]};
+    glm::vec3 CameraUp_worldspace = {view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]};
+    location = glGetUniformLocation(m_particle_shader, "cameraRight");
+    glUniform3fv(location, 1, &CameraRight_worldspace[0]);
+    location = glGetUniformLocation(m_particle_shader, "cameraUp");
+    glUniform3fv(location, 1, &CameraUp_worldspace[0]);
 }

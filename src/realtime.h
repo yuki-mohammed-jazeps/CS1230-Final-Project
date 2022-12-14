@@ -6,6 +6,7 @@
 #include "lighting.h"
 #include "shapes/geometry.h"
 #include "utils/sceneparser.h"
+#include "particle.h"
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
 #endif
@@ -91,4 +92,7 @@ private:
     bool spotLightsInScene = false;  // true if there are any spot lights in the scene
     std::vector<glm::mat4> spotLightSpaceMats;
     void updateSpotLightSpaceMat(); // rotates the direction vec by 10eg every call
+
+    //particle
+    particle part = particle();
 };

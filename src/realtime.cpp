@@ -46,6 +46,8 @@ void Realtime::finish() {
   glDeleteTextures(MAX_SPOTLIGHTS, &shadowMap[0]);
   glDeleteProgram(shadow_shader_id);
 
+  part.particleFinish();
+
   this->doneCurrent();
 }
 
@@ -73,12 +75,12 @@ void Realtime::initializeGL() {
   glEnable(GL_CULL_FACE);
 
   // Load shaders
-  phong_shader_id   = ShaderLoader::createShaderProgram("resources/shaders/parallax.vert",
-                                                        "resources/shaders/parallax.frag");
-  texture_shader_id = ShaderLoader::createShaderProgram("resources/shaders/texture.vert",
-                                                        "resources/shaders/texture.frag");
-  shadow_shader_id = ShaderLoader::createShaderProgram("resources/shaders/shadow.vert",
-                                                      "resources/shaders/shadow.frag");
+  phong_shader_id   = ShaderLoader::createShaderProgram(":resources/shaders/parallax.vert",
+                                                        ":resources/shaders/parallax.frag");
+  texture_shader_id = ShaderLoader::createShaderProgram(":resources/shaders/texture.vert",
+                                                        ":resources/shaders/texture.frag");
+  shadow_shader_id = ShaderLoader::createShaderProgram(":resources/shaders/shadow.vert",
+                                                      ":resources/shaders/shadow.frag");
 
   glUseProgram(phong_shader_id);
   // Pass shader to camera
@@ -126,6 +128,7 @@ void Realtime::initializeGL() {
       glBindTexture(GL_TEXTURE_2D, 0);
   }
   // ------------------------------------------------------------------------- //
+  part.particleInit();
 
   glUseProgram(0);
 }
@@ -170,6 +173,7 @@ void Realtime::updateSpotLightSpaceMat() {
 }
 
 void Realtime::paintGL() {
+//    std::cout<<cam.get
 
     // --------  SHADOW MAPPING RELATED (render the shadow map into shadowMap texture) -------- //
     if (spotLightsInScene) {  // render shadow map only if there is at least one spot light in the scene
@@ -223,6 +227,8 @@ void Realtime::paintGL() {
 
   // Draw meshes in our master set
   scene_objects.draw();
+
+  part.particleDraw();
 
   ////////////////////////////
   // Render fullscreen quad //

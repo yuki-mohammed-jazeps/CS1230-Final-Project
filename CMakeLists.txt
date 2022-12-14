@@ -45,6 +45,7 @@ add_executable(${PROJECT_NAME}
     src/shapes/sphere.cpp
     src/shapes/triangle.cpp
     src/shapes/mesh.cpp
+    src/particle.cpp
 
     src/mainwindow.h
     src/lighting.h
@@ -66,6 +67,7 @@ add_executable(${PROJECT_NAME}
     src/shapes/sphere.h
     src/shapes/triangle.h
     src/shapes/mesh.h
+    src/particle.h
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
@@ -98,6 +100,9 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/texture.vert
         resources/shaders/shadow.frag
         resources/shaders/shadow.vert
+        resources/shaders/particle.vert
+        resources/shaders/particle.frag
+        resources/scene/Particle.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

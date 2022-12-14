@@ -57,4 +57,7 @@ public:
   void move(bool w, bool a, bool s, bool d, bool c, bool u, float t);
   void rotate_side(float angle);
   void rotate_up(float angle);
+
+  void send_particleUiforms(GLuint m_particle_shader, glm::mat4 part_model_matrix);
+
 };
