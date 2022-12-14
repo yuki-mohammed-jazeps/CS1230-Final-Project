@@ -6,11 +6,11 @@
         <ambientcoeff v="0.5"/>
     </globaldata>
 
-    <lightdata>
+    <!-- <lightdata>
         <id v="0"/>
         <color r="1" g="1" b="1"/>
         <position x="3" y="3" z="3"/>
-    </lightdata>
+    </lightdata> -->
 
     <cameradata>
         <pos x="0.6" y="3" z="7"/>
@@ -22,9 +22,9 @@
    <lightdata>
 		<id v="0"/>
 		<type v="spot"/>
-		<color r="0.9" g="0.9" b="0.2"/>
+		<color r="0.2" g="0.2" b="0.9"/>
 		<direction x="0.5" y="-0.5" z="0"/>
-		<position x="-1" y="2" z="0"/>
+		<position x="-1" y="3" z="0"/>
 		<penumbra v="4"/>
 		<angle v="30"/>
 		<function x="0.2" y="0.05" z="0.0"/>
@@ -36,7 +36,7 @@
 		<type v="spot"/>
 		<color r="0.2" g="0.9" b="0.2"/>
 		<direction x="0" y="-1" z="-1"/>
-		<position x="0" y="2" z="1.5"/>
+		<position x="0" y="3" z="1.5"/>
 		<penumbra v="4"/>
 		<angle v="30"/>
 		<function x="0.2" y="0.05" z="0.0"/>
@@ -47,7 +47,7 @@
 		<type v="spot"/>
 		<color r="0.9" g="0.2" b="0.0"/>
 		<direction x="0" y="-1" z="1"/>
-		<position x="0" y="2" z="-1.5"/>
+		<position x="0" y="3" z="-1.5"/>
 		<penumbra v="4"/>
 		<angle v="30"/>
 		<function x="0.2" y="0.05" z="0.0"/>
@@ -58,15 +58,37 @@
 		<type v="spot"/>
 		<color r="0.9" g="0.9" b="0.9"/>
 		<direction x="0" y="-1" z="0"/>
-		<position x="0" y="4" z="0"/>
+		<position x="-5.5" y="6" z="0.5"/>
 		<penumbra v="10"/>
-		<angle v="13"/>
+		<angle v="40"/>
+		<function x="0.8" y="0.05" z="0.0"/>
+	</lightdata>
+
+	<lightdata>
+		<id v="4"/>
+		<type v="spot"/>
+		<color r="0.9" g="0.9" b="0.9"/>
+		<direction x="0" y="-1" z="0"/>
+		<position x="0.7" y="4" z="-1.5"/>
+		<penumbra v="10"/>
+		<angle v="45"/>
 		<function x="0.8" y="0.05" z="0.0"/>
 	</lightdata>
 
 
 
     <object type="tree" name="root">
+		<transblock>
+			<rotate x="0.0" y="1" z="0.0" angle="90.0" />
+			<translate x="-1.8" y="0.40" z="-4.0"/>
+			<scale x="2.7" y="2.7" z="2.7" />
+            <object type="primitive" name="mesh" meshfile="mesh/piano.obj">
+                <diffuse r="0.43" g="0.73" b="0.99"/>
+				<specular r="1" g="1" b="1"/>
+				<shininess v="100"/>
+            </object>
+        </transblock>   
+
         <transblock>
 			<translate x="-5" y="-0.6" z="-3"/>
 			<scale x="1.7" y="1.7" z="1.7" />
@@ -80,7 +102,7 @@
             </object>
         </transblock>
 
-	<transblock>
+		<transblock>
 			<translate x="0.6" y="-0.45" z="-1.7"/>
 			<scale x="0.004" y="0.004" z="0.004" />
             <object type="primitive" name="mesh" meshfile="mesh/christmas_tree.obj">

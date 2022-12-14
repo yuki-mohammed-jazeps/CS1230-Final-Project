@@ -178,3 +178,4 @@ Thumbs.db
 *.exe
 
 !resources/scene/mesh/*obj
+!resources/mesh/*obj

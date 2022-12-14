@@ -46,8 +46,8 @@ uniform vec3  camera_pos;
 // shadow mapping related
 uniform bool do_shadows;
 int spotLightNum = 0;  // used to index into below uniforms - this is incremented after calculate_shadow is called
-uniform sampler2D shadowMap[4];
-uniform mat4 spotLightSpaceMat[4];
+uniform sampler2D shadowMap[5];
+uniform mat4 spotLightSpaceMat[5];
 
 float calculate_shadow(float bias)
 {
