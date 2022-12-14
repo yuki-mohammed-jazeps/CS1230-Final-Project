@@ -104,7 +104,6 @@ void Realtime::initializeGL() {
 
   // --------  SHADOW MAPPING RELATED (set up FBO and depth texture for shadowmap) -------- //
   for (int i = 0; i < MAX_SPOTLIGHTS; ++i) {
-      std::cout << i << std::endl;
 
       // The framebuffer
       glGenFramebuffers(1, &shadowFBO[i]);
