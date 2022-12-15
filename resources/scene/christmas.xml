@@ -224,6 +224,20 @@
         </transblock>
 
 		<transblock>
+			<translate x="-5.5" y="-0.3" z="-2.7"/>
+			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
+			<rotate x="0.0" y="0" z="1.0" angle="15.0" />
+			<rotate x="0.0" y="1" z="0.0" angle="-70.0" />
+			<scale x="0.4" y="0.4" z="0.4" />
+            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
+				<texture file="image/log.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+
+		<transblock>
 			<translate x="-2" y="-0.6" z="0"/>
 			<scale x="12" y="0.1" z="7"/>
 			<object type="primitive" name="cube" >
