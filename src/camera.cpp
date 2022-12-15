@@ -138,7 +138,7 @@ void camera::send_uniforms() {
 // Key movement, WASD self explanatory, c = control, u = space, t = delta time
 void camera::move(bool w, bool a, bool s, bool d,
   bool c, bool u, float t) {
-  float distance = 5.f * t; // Scale movement speed by delta time
+  float distance = 3.f * t; // Scale movement speed by delta time
   vec4  direction = vec4(0.f);
 
   // Translate each key independently
@@ -181,7 +181,6 @@ void camera::rotate_up(float angle) {
 
 void camera::send_particleUiforms(GLuint m_particle_shader, glm::mat4 part_model_matrix){
     glm::mat4 particle_mvp = proj_matrix * view_matrix * part_model_matrix;
-//    std::cout << glm::to_string(particle_mvp) << std::endl;
     GLuint location = glGetUniformLocation(m_particle_shader, "mvp");
     glUniformMatrix4fv(location, 1, false, &particle_mvp[0][0]);
 

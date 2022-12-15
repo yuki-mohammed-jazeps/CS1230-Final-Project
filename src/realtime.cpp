@@ -42,6 +42,9 @@ void Realtime::finish() {
   for (auto &t : textures)
     t.cleanup();
 
+  glDeleteProgram(phong_shader_id);
+  glDeleteProgram(texture_shader_id);
+
   // SHADOW MAPPING RELATED
   glDeleteFramebuffers(MAX_SPOTLIGHTS, &shadowFBO[0]);
   glDeleteTextures(MAX_SPOTLIGHTS, &shadowMap[0]);
@@ -67,13 +70,14 @@ void Realtime::initializeGL() {
   }
   std::cout << "Initialized GL: Version " << glewGetString(GLEW_VERSION) << std::endl;
 
-  // Allows OpenGL to draw objects appropriately on top of one another
-  glEnable(GL_DEPTH_TEST);
   // Tells OpenGL how big the screen is
   glViewport(0, 0, size().width() * m_devicePixelRatio, size().height() * m_devicePixelRatio);
-
+  // Allows OpenGL to draw objects appropriately on top of one another
+  glEnable(GL_DEPTH_TEST);
   // Students: anything requiring OpenGL calls when the program starts should be done here
   glEnable(GL_CULL_FACE);
+  // Gamma correction
+  glEnable(GL_FRAMEBUFFER_SRGB);
 
   // Load shaders
   phong_shader_id   = ShaderLoader::createShaderProgram(":resources/shaders/parallax.vert",
@@ -81,7 +85,7 @@ void Realtime::initializeGL() {
   texture_shader_id = ShaderLoader::createShaderProgram(":resources/shaders/texture.vert",
                                                         ":resources/shaders/texture.frag");
   shadow_shader_id = ShaderLoader::createShaderProgram(":resources/shaders/shadow.vert",
-                                                      ":resources/shaders/shadow.frag");
+                                                       ":resources/shaders/shadow.frag");
 
   glUseProgram(phong_shader_id);
   // Pass shader to camera
@@ -153,18 +157,13 @@ glm::mat4 rotationMat(float theta, glm::vec3 axis) {
 
 // SHADOW MAPPING RELATED - rotates the direction vec for all spot lights by 1deg
 void Realtime::updateSpotLightSpaceMat(float deltaTime) {
-
-    auto rotMat = rotationMat(50 * deltaTime, glm::vec3(0, -1, 0)); // rotates vectors by 1deg along -y axis
-
     // update the directions for all spot lights in the scene & calculate new light space mats
     spotLightSpaceMats.clear();  // clear old spotlight space mats
     for (SceneLightData &light : meta_data.lights) {
         if (light.type == LightType::LIGHT_SPOT) {
-            light.dir = rotMat*light.dir; // rotate the spot light direction by 1deg
-
-            float FoV = light.angle; // glm::radians(90.0f);
+            float FoV = light.angle + light.penumbra; // glm::radians(90.0f);
             glm::mat4 lightProjectionMatrix = glm::perspective(FoV, 1.0f, 0.1f, 100.f);
-            glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
+            glm::mat4 lightViewMatrix = glm::lookAt(glm::vec3(light.pos), glm::vec3(light.pos) + glm::vec3(light.dir), glm::vec3(0.0f,0.0f,1.0f));
 
             spotLightSpaceMats.push_back(lightProjectionMatrix * lightViewMatrix);
         }
@@ -417,8 +416,8 @@ void Realtime::mouseMoveEvent(QMouseEvent *event) {
       m_prev_mouse_pos = glm::vec2(posX, posY);
 
       // Use deltaX and deltaY here to rotate
-      float x_angle = deltaX * 0.1;
-      float y_angle = deltaY * 0.1;
+      float x_angle = deltaX * 0.06;
+      float y_angle = deltaY * 0.06;
 
       // Update camera
       cam.rotate_side(x_angle);

@@ -3,14 +3,8 @@
     <globaldata>
         <diffusecoeff v="0.5"/>
         <specularcoeff v="0.5"/>
-        <ambientcoeff v="0.5"/>
+        <ambientcoeff v="0.1"/>
     </globaldata>
-
-    <!-- <lightdata>
-        <id v="0"/>
-        <color r="1" g="1" b="1"/>
-        <position x="3" y="3" z="3"/>
-    </lightdata> -->
 
     <cameradata>
         <pos x="0.6" y="3" z="7"/>
@@ -19,60 +13,53 @@
         <heightangle v="45"/>
     </cameradata>
 
-   <lightdata>
+	<lightdata>
 		<id v="0"/>
 		<type v="spot"/>
-		<color r="0.2" g="0.2" b="0.9"/>
-		<direction x="0.5" y="-0.5" z="0"/>
-		<position x="-1" y="3" z="0"/>
-		<penumbra v="4"/>
-		<angle v="30"/>
-		<function x="0.2" y="0.05" z="0.0"/>
+		<color r="0.9" g="0.9" b="0.9"/>
+		<direction x="0.1" y="-1" z="0"/>
+		<position x="-4" y="6" z="2"/>
+		<penumbra v="10"/>
+		<angle v="60"/>
+		<function x="0.8" y="0.05" z="0.0"/>
 	</lightdata>
-
 
 	<lightdata>
 		<id v="1"/>
 		<type v="spot"/>
-		<color r="0.2" g="0.9" b="0.2"/>
-		<direction x="0" y="-1" z="-1"/>
-		<position x="0" y="3" z="1.5"/>
-		<penumbra v="4"/>
-		<angle v="30"/>
-		<function x="0.2" y="0.05" z="0.0"/>
+		<color r="0.9" g="0.9" b="0.9"/>
+		<direction x="0" y="-1" z="0"/>
+		<position x="0.6" y="6" z="-1.7"/>
+		<penumbra v="10"/>
+		<angle v="60"/>
+		<function x="0.8" y="0.05" z="0.0"/>
 	</lightdata>
 
 	<lightdata>
 		<id v="2"/>
 		<type v="spot"/>
-		<color r="0.9" g="0.2" b="0.0"/>
-		<direction x="0" y="-1" z="1"/>
-		<position x="0" y="3" z="-1.5"/>
-		<penumbra v="4"/>
-		<angle v="30"/>
-		<function x="0.2" y="0.05" z="0.0"/>
+		<color r="0.9" g="0.9" b="0.9"/>
+		<direction x="0" y="-1" z="0"/>
+		<position x="-5" y="6" z="-3"/>
+		<penumbra v="10"/>
+		<angle v="50"/>
+		<function x="0.8" y="0.05" z="0.0"/>
 	</lightdata>
 
 	<lightdata>
 		<id v="3"/>
-		<type v="spot"/>
-		<color r="0.9" g="0.9" b="0.9"/>
-		<direction x="0" y="-1" z="0"/>
-		<position x="-5.5" y="6" z="0.5"/>
-		<penumbra v="10"/>
-		<angle v="40"/>
-		<function x="0.8" y="0.05" z="0.0"/>
+		<type v="point"/>
+		<color r="0.8" g="0.9" b="0.8"/>
+		<position x="1" y="3" z="6"/>
+        <function x="0.8" y="0.2" z="0.0"/>
 	</lightdata>
 
 	<lightdata>
-		<id v="4"/>
-		<type v="spot"/>
-		<color r="0.9" g="0.9" b="0.9"/>
-		<direction x="0" y="-1" z="0"/>
-		<position x="0.7" y="4" z="-1.5"/>
-		<penumbra v="10"/>
-		<angle v="45"/>
-		<function x="0.8" y="0.05" z="0.0"/>
+		<id v="5"/>
+		<type v="point"/>
+		<color r="1" g="0.4" b="0"/>
+		<position x="-5" y="-0.40" z="-3"/>
+        <function x="0.8" y="0.2" z="0.0"/>
 	</lightdata>
 
 
@@ -80,10 +67,10 @@
     <object type="tree" name="root">
 		<transblock>
 			<rotate x="0.0" y="1" z="0.0" angle="90.0" />
-			<translate x="-1.8" y="0.40" z="-4.0"/>
+			<translate x="-1.4" y="0.50" z="-4.0"/>
 			<scale x="2.7" y="2.7" z="2.7" />
             <object type="primitive" name="mesh" meshfile="mesh/piano.obj">
-                <diffuse r="0.43" g="0.73" b="0.99"/>
+                <diffuse r="1" g="1" b="1"/>
 				<specular r="1" g="1" b="1"/>
 				<shininess v="100"/>
             </object>
@@ -96,7 +83,7 @@
 		<texture file="image/marble.jpg" u="1" v="1"/>
 		<blend v="1"/>
                 <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
+                <ambient r="0.1" g="0.1" b="0.1"/>
                 <specular r="0.9" g="0.9" b="0.9"/>
                 <shininess v="100"/>
             </object>
@@ -109,131 +96,9 @@
 		<texture file="image/christmas_tree.png" u="1" v="1"/>
 		<blend v="1"/>
                 <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
+                <ambient r="0.03" g="0.1" b="0.03"/>
                 <specular r="0.9" g="0.9" b="0.9"/>
                 <shininess v="100"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="0" y="-0.3" z="0"/>
-			<scale x="7" y="7" z="7" />
-			<rotate x="0.0" y="1" z="0.0" angle="-50.0" />
-			<rotate x="0.0" y="0" z="1.0" angle="90.0" />
-			
-            <object type="primitive" name="mesh" meshfile="mesh/gift3.obj">
-				<texture file="image/PresentColor.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-                <specular r="0.9" g="0.9" b="0.9"/>
-                <shininess v="100"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="1.5" y="-0.6" z="0"/>
-			<scale x="9" y="9" z="9" />
-			<rotate x="0.0" y="1" z="0.0" angle="-40.0" />
-            <object type="primitive" name="mesh" meshfile="mesh/gift3.obj">
-				<texture file="image/PresentColor.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-                <specular r="0.9" g="0.9" b="0.9"/>
-                <shininess v="100"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="0" y="-0.1" z="0"/>
-			<rotate x="0.0" y="1" z="0.0" angle="-30.0" />
-			<scale x="3" y="3" z="3" />
-            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
-				<texture file="image/cube_diffuse.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="0.6" y="-0.5" z="0"/>
-			<rotate x="0.0" y="1" z="0.0" angle="70.0" />
-			<scale x="7" y="3" z="3" />
-            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
-				<texture file="image/cube_diffuse7.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="-0.5" y="-0.5" z="-2"/>
-			<rotate x="0.0" y="1" z="0.0" angle="70.0" />
-			<scale x="5" y="2" z="5" />
-            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
-				<texture file="image/cube_diffuse2.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="-5.2" y="-0.3" z="-2.5"/>
-			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
-			<rotate x="0.0" y="1" z="0.0" angle="-30.0" />
-			<scale x="0.6" y="0.6" z="0.6" />
-            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
-				<texture file="image/log.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="-5.2" y="-0.3" z="-3"/>
-			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
-			<rotate x="0.0" y="0" z="1.0" angle="15.0" />
-			<rotate x="0.0" y="1" z="0.0" angle="-90.0" />
-			<scale x="0.6" y="0.6" z="0.6" />
-            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
-				<texture file="image/log.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-            </object>
-        </transblock>
-		
-
-		<transblock>
-			<translate x="-5.3" y="0" z="-2.7"/>
-			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
-			<rotate x="1.0" y="0" z="0.0" angle="30.0" />
-			<rotate x="0.0" y="1" z="0.0" angle="-60.0" />
-			<scale x="0.6" y="0.6" z="0.6" />
-            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
-				<texture file="image/log.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
-            </object>
-        </transblock>
-
-		<transblock>
-			<translate x="-5.5" y="-0.3" z="-2.7"/>
-			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
-			<rotate x="0.0" y="0" z="1.0" angle="15.0" />
-			<rotate x="0.0" y="1" z="0.0" angle="-70.0" />
-			<scale x="0.4" y="0.4" z="0.4" />
-            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
-				<texture file="image/log.png" u="1" v="1"/>
-				<blend v="1"/>
-                <diffuse r="0.9" g="0.9" b="0.9"/>
-                <ambient r="0.3" g="0.2" b="0.1"/>
             </object>
         </transblock>
 
@@ -284,6 +149,108 @@
 				<blend v="0.8"/>
 			</object>
 		</transblock>
+
+	<transblock>
+			<translate x="0" y="-0.3" z="0"/>
+			<scale x="7" y="7" z="7" />
+			<rotate x="0.0" y="1" z="0.0" angle="-50.0" />
+			<rotate x="0.0" y="0" z="1.0" angle="90.0" />
+			
+            <object type="primitive" name="mesh" meshfile="mesh/gift3.obj">
+				<texture file="image/PresentColor.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+                <specular r="0.9" g="0.9" b="0.9"/>
+                <shininess v="100"/>
+            </object>
+        </transblock>
+
+		<transblock>
+			<translate x="1.5" y="-0.6" z="0"/>
+			<scale x="9" y="9" z="9" />
+            <object type="primitive" name="mesh" meshfile="mesh/gift3.obj">
+				<texture file="image/PresentColor.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+                <specular r="0.9" g="0.9" b="0.9"/>
+                <shininess v="100"/>
+            </object>
+        </transblock>
+
+
+
+
+	<transblock>
+			<translate x="0" y="-0.1" z="0"/>
+			<rotate x="0.0" y="1" z="0.0" angle="-30.0" />
+			<scale x="3" y="3" z="3" />
+            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
+				<texture file="image/cube_diffuse.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+
+		<transblock>
+			<translate x="0.6" y="-0.5" z="0"/>
+			<rotate x="0.0" y="1" z="0.0" angle="70.0" />
+			<scale x="7" y="3" z="3" />
+            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
+				<texture file="image/cube_diffuse7.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+
+
+
+	<transblock>
+			<translate x="-5.2" y="-0.3" z="-2.5"/>
+			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
+			<rotate x="0.0" y="1" z="0.0" angle="-30.0" />
+			<scale x="0.6" y="0.6" z="0.6" />
+            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
+				<texture file="image/log.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+
+		<transblock>
+			<translate x="-5.2" y="-0.3" z="-3"/>
+			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
+			<rotate x="0.0" y="0" z="1.0" angle="15.0" />
+			<rotate x="0.0" y="1" z="0.0" angle="-90.0" />
+			<scale x="0.6" y="0.6" z="0.6" />
+            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
+				<texture file="image/log.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+		
+
+		<transblock>
+			<translate x="-5.3" y="0" z="-2.7"/>
+			<!-- <rotate x="0.0" y="1" z="0.0" angle="30.0" /> -->
+			<rotate x="1.0" y="0" z="0.0" angle="30.0" />
+			<rotate x="0.0" y="1" z="0.0" angle="-60.0" />
+			<scale x="0.6" y="0.6" z="0.6" />
+            <object type="primitive" name="mesh" meshfile="mesh/log.obj">
+				<texture file="image/log.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+
+
     </object>
 
 </scenefile>

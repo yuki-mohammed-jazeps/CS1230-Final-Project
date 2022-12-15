@@ -24,13 +24,11 @@ public:
 private:
     glm::vec3 firePos = glm::vec3(-5, -0.4, -3);
 
-//    camera cam;
-    float spawnRadius = 1.0;
+    float spawnRadius = 0.7;
     int particleSize = 50000;
     int particlelDataSize = 4;
     std::vector<Particle> particles;
     std::vector<float> positions;
-//    float positions[particleSize];
     GLuint m_particle_shader;
     GLuint m_particle_vbo;
     GLuint m_particle_vao;
@@ -43,5 +41,8 @@ private:
 
     float mag = 5.f;
     int timer = 0;
+
+    // Spawn randomly in circle
+    glm::vec2 randCirc();
 };
 

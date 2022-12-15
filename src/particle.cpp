@@ -48,9 +48,9 @@ float uniform(){
     return (float)rand() / RAND_MAX;
 }
 
-glm::vec2 randCirc(){
+glm::vec2 particle::randCirc(){
     float theta = 2 * M_PI * uniform();
-    double len = sqrt(uniform()) * 1.0f;
+    double len = sqrt(uniform()) * spawnRadius;
     return glm::vec2(len * cos(theta), len * sin(theta));
 }
 
