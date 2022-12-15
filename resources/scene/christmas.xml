@@ -170,6 +170,18 @@
         </transblock>
 
 		<transblock>
+			<translate x="-0.5" y="-0.5" z="-2"/>
+			<rotate x="0.0" y="1" z="0.0" angle="70.0" />
+			<scale x="5" y="2" z="5" />
+            <object type="primitive" name="mesh" meshfile="mesh/gift4.obj">
+				<texture file="image/cube_diffuse2.png" u="1" v="1"/>
+				<blend v="1"/>
+                <diffuse r="0.9" g="0.9" b="0.9"/>
+                <ambient r="0.3" g="0.2" b="0.1"/>
+            </object>
+        </transblock>
+
+		<transblock>
 			<translate x="-2" y="-0.6" z="0"/>
 			<scale x="12" y="0.1" z="7"/>
 			<object type="primitive" name="cube" >
